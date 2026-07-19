@@ -41,4 +41,5 @@ export interface AdminProfile {
   role: string;
   email: string;
   avatarInitials: string;
+  avatarUri?: string;
 }

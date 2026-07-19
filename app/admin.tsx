@@ -12,6 +12,7 @@ import {
   Alert,
   Switch,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -42,6 +43,8 @@ import {
   Mail,
   Phone,
   Calendar,
+  Lock,
+  Settings,
 } from 'lucide-react-native';
 import Card from '@/components/ui/Card';
 import StatusBadge from '@/components/ui/StatusBadge';
@@ -60,6 +63,8 @@ import AdminUserManagement from '@/components/admin/AdminUserManagement';
 import AdminSafetyTips from '@/components/admin/AdminSafetyTips';
 import AdminSOSReport from '@/components/admin/AdminSOSReport';
 import AdminSettings from '@/components/admin/AdminSettings';
+import AdminEditProfile from '@/components/admin/AdminEditProfile';
+import AdminChangePassword from '@/components/admin/AdminChangePassword';
 
 const mockAdminProfiles: AdminProfile[] = [
   { name: 'Admin', role: 'Chief Administrator', email: 'admin@guardian.ai', avatarInitials: 'AD' },
@@ -189,8 +194,9 @@ export default function AdminScreen() {
   const isLargeScreen = width >= 768;
 
   // States
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'tips' | 'sos' | 'settings'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'tips' | 'sos' | 'edit-profile' | 'change-password'>('dashboard');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isSettingsDropdownOpen, setIsSettingsDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   
   // Custom interactive models for notifications
@@ -249,9 +255,10 @@ export default function AdminScreen() {
 
   // Admin Profile State
   const [currentAdmin, setCurrentAdmin] = useState<AdminProfile>(mockAdminProfiles[0]);
-  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(true);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [editAdminName, setEditAdminName] = useState(currentAdmin.name);
   const [editAdminEmail, setEditAdminEmail] = useState(currentAdmin.email);
+  const [editAdminAvatar, setEditAdminAvatar] = useState<string | undefined>(currentAdmin.avatarUri);
 
   // Stats
   const activeSOSCount = sosReports.filter(s => s.status !== 'Resolved').length;
@@ -308,9 +315,10 @@ export default function AdminScreen() {
     else setGreeting('Good Evening');
   }, []);
 
-  const handleTabChange = (tab: 'dashboard' | 'users' | 'tips' | 'sos' | 'settings') => {
+  const handleTabChange = (tab: 'dashboard' | 'users' | 'tips' | 'sos' | 'edit-profile' | 'change-password') => {
     setActiveTab(tab);
     setIsDrawerOpen(false);
+    setIsProfileDropdownOpen(false);
   };
 
   const handleLogout = () => {
@@ -451,6 +459,7 @@ export default function AdminScreen() {
       ...prev,
       name: editAdminName,
       email: editAdminEmail,
+      avatarUri: editAdminAvatar,
       avatarInitials: editAdminName.split(' ').map(n => n[0]).join('').toUpperCase() || 'AD'
     }));
     addLog(`[PROFILE] Updated administrator details to: ${editAdminName} (${editAdminEmail})`);
@@ -462,6 +471,7 @@ export default function AdminScreen() {
     setCurrentAdmin(profile);
     setEditAdminName(profile.name);
     setEditAdminEmail(profile.email);
+    setEditAdminAvatar(profile.avatarUri);
     addLog(`[PROFILE] Switched session to Administrator: ${profile.name}`);
     if (Platform.OS === 'web') alert(`Switched session to ${profile.name}`);
     else Alert.alert('Profile Switched', `Switched session to ${profile.name}`);
@@ -506,7 +516,7 @@ export default function AdminScreen() {
     { id: 'users', label: 'User Management', icon: <Users size={20} /> },
     { id: 'tips', label: 'Safety Tips', icon: <Lightbulb size={20} /> },
     { id: 'sos', label: 'SOS Report', icon: <AlertTriangle size={20} /> },
-    { id: 'settings', label: 'Settings', icon: <User size={20} /> },
+    { id: 'settings', label: 'Settings', icon: <Settings size={20} /> },
   ];
 
   const renderSidebarContent = () => (
@@ -523,27 +533,71 @@ export default function AdminScreen() {
 
       <ScrollView style={styles.menuScrollView} contentContainerStyle={styles.menuList}>
         {menuItems.map((item) => {
-          const isActive = activeTab === item.id;
+          const isSettingsActive = activeTab === 'edit-profile' || activeTab === 'change-password';
+          const isActive = item.id === 'settings' ? isSettingsActive : activeTab === item.id;
+
+          const handlePress = () => {
+            if (item.id === 'settings') {
+              setIsSettingsDropdownOpen(!isSettingsDropdownOpen);
+            } else {
+              handleTabChange(item.id as any);
+            }
+          };
+
           return (
-            <TouchableOpacity
-              key={item.id}
-              style={[styles.menuItem, isActive && styles.menuItemActive]}
-              onPress={() => handleTabChange(item.id as any)}
-            >
-              <View style={[styles.menuIconWrapper, isActive ? styles.menuIconActive : styles.menuIconInactive]}>
-                {React.cloneElement(item.icon, {
-                  color: isActive ? Colors.primary : Colors.secondary,
-                })}
-              </View>
-              <Text style={[styles.menuText, isActive && styles.menuTextActive]}>
-                {item.id === 'dashboard' ? 'Dashboard' : item.label}
-              </Text>
-              {item.id === 'sos' && activeSOSCount > 0 && (
-                <View style={styles.badgeSOS}>
-                  <Text style={styles.badgeTextSOS}>{activeSOSCount}</Text>
+            <View key={item.id}>
+              <TouchableOpacity
+                style={[styles.menuItem, isActive && styles.menuItemActive]}
+                onPress={handlePress}
+              >
+                <View style={[styles.menuIconWrapper, isActive ? styles.menuIconActive : styles.menuIconInactive]}>
+                  {React.cloneElement(item.icon, {
+                    color: isActive ? Colors.primary : Colors.secondary,
+                  })}
+                </View>
+                <Text style={[styles.menuText, isActive && styles.menuTextActive]}>
+                  {item.label}
+                </Text>
+                {item.id === 'sos' && activeSOSCount > 0 && (
+                  <View style={styles.badgeSOS}>
+                    <Text style={styles.badgeTextSOS}>{activeSOSCount}</Text>
+                  </View>
+                )}
+                {item.id === 'settings' && (
+                  <View style={{ marginLeft: 'auto' }}>
+                    {isSettingsDropdownOpen ? (
+                      <ChevronUp size={16} color={isActive ? Colors.primary : Colors.secondary} />
+                    ) : (
+                      <ChevronDown size={16} color={isActive ? Colors.primary : Colors.secondary} />
+                    )}
+                  </View>
+                )}
+              </TouchableOpacity>
+
+              {item.id === 'settings' && isSettingsDropdownOpen && (
+                <View style={styles.submenuContainer}>
+                  <TouchableOpacity
+                    style={[styles.submenuItem, activeTab === 'edit-profile' && styles.submenuItemActive]}
+                    onPress={() => handleTabChange('edit-profile')}
+                  >
+                    <User size={16} color={activeTab === 'edit-profile' ? Colors.primary : Colors.secondary} />
+                    <Text style={[styles.submenuText, activeTab === 'edit-profile' && styles.submenuTextActive]}>
+                      Edit Profile
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[styles.submenuItem, activeTab === 'change-password' && styles.submenuItemActive]}
+                    onPress={() => handleTabChange('change-password')}
+                  >
+                    <Lock size={16} color={activeTab === 'change-password' ? Colors.primary : Colors.secondary} />
+                    <Text style={[styles.submenuText, activeTab === 'change-password' && styles.submenuTextActive]}>
+                      Change Password
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               )}
-            </TouchableOpacity>
+            </View>
           );
         })}
       </ScrollView>
@@ -603,9 +657,49 @@ export default function AdminScreen() {
               <Bell size={22} color={Colors.heading} />
               {activeSOSCount > 0 && <View style={styles.notifBadge} />}
             </TouchableOpacity>
-            <TouchableOpacity style={styles.topActionIconBtn} onPress={() => handleTabChange('settings')}>
-              <User size={22} color={Colors.heading} />
-            </TouchableOpacity>
+            <View style={{ position: 'relative', zIndex: 1000 }}>
+              <TouchableOpacity 
+                style={styles.topActionIconBtn} 
+                onPress={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+              >
+                {currentAdmin.avatarUri ? (
+                  <Image 
+                    source={{ uri: currentAdmin.avatarUri }} 
+                    style={{ width: 32, height: 32, borderRadius: 16 }} 
+                  />
+                ) : (
+                  <User size={22} color={Colors.heading} />
+                )}
+              </TouchableOpacity>
+
+              {isProfileDropdownOpen && (
+                <View style={styles.headerProfileDropdown}>
+                  <TouchableOpacity
+                    style={styles.headerDropdownItem}
+                    onPress={() => {
+                      setIsSettingsDropdownOpen(true);
+                      handleTabChange('edit-profile');
+                    }}
+                  >
+                    <User size={16} color={Colors.heading} />
+                    <Text style={styles.headerDropdownText}>Edit Profile</Text>
+                  </TouchableOpacity>
+                  
+                  <View style={styles.headerDropdownDivider} />
+
+                  <TouchableOpacity
+                    style={styles.headerDropdownItem}
+                    onPress={() => {
+                      setIsProfileDropdownOpen(false);
+                      setShowLogoutModal(true);
+                    }}
+                  >
+                    <LogOut size={16} color={Colors.sos} />
+                    <Text style={[styles.headerDropdownText, { color: Colors.sos }]}>Logout</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
           </View>
         </View>
 
@@ -682,16 +776,40 @@ export default function AdminScreen() {
             />
           )}
 
-          {/* TAB 5: SETTINGS */}
-          {activeTab === 'settings' && (
-            <AdminSettings
-              currentAdmin={currentAdmin}
-              editAdminName={editAdminName}
-              setEditAdminName={setEditAdminName}
-              editAdminEmail={editAdminEmail}
-              setEditAdminEmail={setEditAdminEmail}
-              handleSaveProfile={handleSaveProfile}
-            />
+          {/* TAB 5: EDIT PROFILE */}
+          {activeTab === 'edit-profile' && (
+            <View style={styles.tabContentContainer}>
+              <View style={styles.tabHeaderRow}>
+                <Text style={styles.tabHeaderTitle}>⚙ Edit Profile Details</Text>
+              </View>
+              <Card style={styles.settingsSectionCard}>
+                <View style={{ padding: Spacing.md }}>
+                  <AdminEditProfile
+                    editAdminName={editAdminName}
+                    setEditAdminName={setEditAdminName}
+                    editAdminEmail={editAdminEmail}
+                    setEditAdminEmail={setEditAdminEmail}
+                    editAdminAvatar={editAdminAvatar}
+                    setEditAdminAvatar={setEditAdminAvatar}
+                    handleSaveProfile={handleSaveProfile}
+                  />
+                </View>
+              </Card>
+            </View>
+          )}
+
+          {/* TAB 6: CHANGE PASSWORD */}
+          {activeTab === 'change-password' && (
+            <View style={styles.tabContentContainer}>
+              <View style={styles.tabHeaderRow}>
+                <Text style={styles.tabHeaderTitle}>⚙ Change Password</Text>
+              </View>
+              <Card style={styles.settingsSectionCard}>
+                <View style={{ padding: Spacing.md }}>
+                  <AdminChangePassword />
+                </View>
+              </Card>
+            </View>
           )}
         </ScrollView>
       </View>
@@ -959,7 +1077,7 @@ export default function AdminScreen() {
             <AlertTriangle size={48} color={Colors.sos} style={{ marginBottom: Spacing.md, alignSelf: 'center' }} />
             <Text style={styles.modalTitle}>Delete this safety tip?</Text>
             <Text style={styles.modalSubtitle}>
-              Are you sure you want to delete "{selectedTipForDelete?.title}"? This tip will be permanently removed from live devices.
+              Are you sure you want to delete &quot;{selectedTipForDelete?.title}&quot;? This tip will be permanently removed from live devices.
             </Text>
             <View style={styles.modalActionRow}>
               <TouchableOpacity style={styles.modalCancelBtn} onPress={() => setSelectedTipForDelete(null)}>
@@ -1146,6 +1264,8 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
     justifyContent: 'space-between',
     minHeight: 70,
+    zIndex: 1000,
+    elevation: 10,
   },
   topHeaderLeft: {
     flexDirection: 'row',
@@ -2400,5 +2520,66 @@ const styles = StyleSheet.create({
   },
   statusToggleTextActive: {
     color: Colors.primary,
+  },
+  // Submenu Styles
+  submenuContainer: {
+    paddingLeft: Spacing.md,
+    marginTop: 2,
+    gap: 2,
+    marginBottom: Spacing.xs,
+  },
+  submenuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.sm - 2,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Radius.small,
+    marginLeft: Spacing.md,
+    gap: Spacing.sm,
+  },
+  submenuItemActive: {
+    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+  },
+  submenuText: {
+    color: Colors.disabled,
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  submenuTextActive: {
+    color: Colors.white,
+    fontWeight: '600',
+  },
+  // Top Header Profile Dropdown
+  headerProfileDropdown: {
+    position: 'absolute',
+    top: 50,
+    right: 0,
+    backgroundColor: Colors.white,
+    borderRadius: Radius.small,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
+    width: 140,
+    padding: Spacing.xs,
+    ...Shadows.medium,
+    zIndex: 10000,
+    elevation: 100,
+  },
+  headerDropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    paddingVertical: Spacing.sm - 2,
+    paddingHorizontal: Spacing.sm,
+    borderRadius: Radius.small,
+  },
+  headerDropdownText: {
+    fontSize: 13,
+    color: Colors.heading,
+    fontWeight: '600',
+  },
+  headerDropdownDivider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginVertical: 4,
   },
 });

@@ -23,6 +23,8 @@ interface AdminSettingsProps {
   setEditAdminName: (name: string) => void;
   editAdminEmail: string;
   setEditAdminEmail: (email: string) => void;
+  editAdminAvatar?: string;
+  setEditAdminAvatar: (uri: string | undefined) => void;
   handleSaveProfile: () => void;
 }
 
@@ -32,6 +34,8 @@ export default function AdminSettings({
   setEditAdminName,
   editAdminEmail,
   setEditAdminEmail,
+  editAdminAvatar,
+  setEditAdminAvatar,
   handleSaveProfile,
 }: AdminSettingsProps) {
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
@@ -68,6 +72,8 @@ export default function AdminSettings({
               setEditAdminName={setEditAdminName}
               editAdminEmail={editAdminEmail}
               setEditAdminEmail={setEditAdminEmail}
+              editAdminAvatar={editAdminAvatar}
+              setEditAdminAvatar={setEditAdminAvatar}
               handleSaveProfile={handleSaveProfile}
             />
           </View>

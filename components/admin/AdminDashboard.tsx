@@ -30,7 +30,7 @@ interface AdminDashboardProps {
   sosReports: SOSReport[];
   recentRegisteredUsers: string[];
   activeSOSCount: number;
-  handleTabChange: (tab: 'dashboard' | 'users' | 'tips' | 'sos' | 'settings') => void;
+  handleTabChange: (tab: any) => void;
   setShowNotificationModal: (show: boolean) => void;
   handleResolveSOS: (id: string) => void;
 }
