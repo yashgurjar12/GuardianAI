@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
+import { Mail, Lock, Eye, EyeOff, Shield, User } from 'lucide-react-native';
 import AnimatedBackground from '@/components/ui/AnimatedBackground';
 import AIAssistant from '@/components/ui/AIAssistant';
 import AnimatedInput from '@/components/ui/AnimatedInput';
@@ -24,7 +24,27 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = () => {
-    router.replace('/permissions');
+    if (email.trim().toLowerCase() === 'admin@guardian.ai') {
+      router.replace('/admin');
+    } else {
+      router.replace('/permissions');
+    }
+  };
+
+  const handleQuickLogin = (role: 'admin' | 'user') => {
+    if (role === 'admin') {
+      setEmail('admin@guardian.ai');
+      setPassword('admin123');
+      setTimeout(() => {
+        router.replace('/admin');
+      }, 100);
+    } else {
+      setEmail('user@guardian.ai');
+      setPassword('user123');
+      setTimeout(() => {
+        router.replace('/permissions');
+      }, 100);
+    }
   };
 
   return (
@@ -101,6 +121,27 @@ export default function LoginScreen() {
                 <Text style={styles.googleIcon}>G</Text>
                 <Text style={styles.googleText}>Continue with Google</Text>
               </TouchableOpacity>
+
+              {/* Quick Testing Logins */}
+              <View style={styles.dummyContainer}>
+                <Text style={styles.dummyTitle}>Quick Testing Logins</Text>
+                <View style={styles.dummyButtons}>
+                  <TouchableOpacity
+                    style={[styles.dummyButton, styles.dummyAdmin]}
+                    onPress={() => handleQuickLogin('admin')}
+                  >
+                    <Shield size={16} color={Colors.white} />
+                    <Text style={styles.dummyAdminText}>Login as Admin</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.dummyButton, styles.dummyUser]}
+                    onPress={() => handleQuickLogin('user')}
+                  >
+                    <User size={16} color={Colors.primary} />
+                    <Text style={styles.dummyUserText}>Login as User</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
 
             {/* Sign Up Footer */}
@@ -204,5 +245,54 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: Colors.primary,
+  },
+  dummyContainer: {
+    marginTop: Spacing.lg,
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    alignItems: 'center',
+  },
+  dummyTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: Colors.secondary,
+    marginBottom: Spacing.sm,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  dummyButtons: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+    width: '100%',
+    justifyContent: 'space-between',
+  },
+  dummyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    flex: 1,
+    height: 48,
+    borderRadius: Radius.medium,
+    borderWidth: 1.5,
+  },
+  dummyAdmin: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  dummyAdminText: {
+    color: Colors.white,
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  dummyUser: {
+    backgroundColor: Colors.white,
+    borderColor: Colors.primary,
+  },
+  dummyUserText: {
+    color: Colors.primary,
+    fontWeight: '600',
+    fontSize: 14,
   },
 });

@@ -44,6 +44,24 @@ export const Colors = {
   emergencyBg: '#1A1A2E',
   emergencyCard: '#16213E',
   emergencyText: '#FFFFFF',
+
+  // Theme mode mappings for Expo router templates compatibility
+  light: {
+    text: '#0F172A',
+    background: '#F8FAFC',
+    tint: '#2563EB',
+    icon: '#64748B',
+    tabIconDefault: '#94A3B8',
+    tabIconSelected: '#2563EB',
+  },
+  dark: {
+    text: '#FFFFFF',
+    background: '#0D0D0D',
+    tint: '#2563EB',
+    icon: '#94A3B8',
+    tabIconDefault: '#64748B',
+    tabIconSelected: '#2563EB',
+  },
 };
 
 export const Typography = {

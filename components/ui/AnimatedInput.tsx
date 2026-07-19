@@ -100,7 +100,7 @@ export default function AnimatedInput({
         {/* Left Icon */}
         <Animated.View style={[styles.iconWrapper, animatedIconStyle]}>
           {React.isValidElement(icon)
-            ? React.cloneElement(icon as React.ReactElement, {
+            ? React.cloneElement(icon as React.ReactElement<{ color?: string }>, {
               color: isFocused ? Colors.primary : Colors.secondary,
             })
             : icon}

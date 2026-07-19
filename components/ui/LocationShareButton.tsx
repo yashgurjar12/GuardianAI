@@ -22,7 +22,7 @@ export default function LocationShareButton({ onToggle }: LocationShareButtonPro
   const pulse = useSharedValue(1);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: any;
     if (isActive) {
       // Pulse animation for location sharing dot
       pulse.value = withRepeat(
