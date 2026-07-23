@@ -21,6 +21,7 @@ import SearchBar from '@/components/ui/SearchBar';
 import Card from '@/components/ui/Card';
 import PrimaryButton from '@/components/ui/PrimaryButton';
 import StatusBadge from '@/components/ui/StatusBadge';
+import AppTopbar from '@/components/ui/AppTopbar';
 import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 import { mockRoutes, mockNearbyPlaces } from '@/constants/mockData';
 
@@ -40,8 +41,11 @@ export default function SafeRouteScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <View style={styles.header}>
+        {/* Topbar: GuardianAI title on left, Bell & Profile icon on right */}
+        <AppTopbar title="GuardianAI" />
+
+        {/* Below topbar: Safe Route section title */}
+        <View style={styles.sectionHeader}>
           <Text style={styles.title}>Safe Route</Text>
           <Text style={styles.subtitle}>Find the safest path to your destination</Text>
         </View>
@@ -175,9 +179,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xxl,
   },
-  header: {
-    paddingTop: Spacing.md,
+  sectionHeader: {
     marginBottom: Spacing.lg,
+    paddingTop: Spacing.xs,
   },
   title: {
     fontSize: 26,

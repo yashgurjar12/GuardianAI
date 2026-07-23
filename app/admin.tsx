@@ -13,6 +13,7 @@ import {
   Switch,
   ActivityIndicator,
   Image,
+  Pressable,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -613,23 +614,33 @@ export default function AdminScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Drawer Overlay for Mobile */}
-      {!isLargeScreen && isDrawerOpen && (
-        <TouchableOpacity
-          style={styles.drawerOverlay}
-          activeOpacity={1}
-          onPress={() => setIsDrawerOpen(false)}
-        />
-      )}
-
-      {/* Drawer Container (Sliding on mobile, persistent on wide screen) */}
+      {/* Mobile Drawer Modal */}
       {!isLargeScreen ? (
-        <Animated.View style={[styles.mobileDrawer, animatedDrawerStyle]}>
-          {renderSidebarContent()}
-          <TouchableOpacity style={styles.drawerCloseBtn} onPress={() => setIsDrawerOpen(false)}>
-            <X size={20} color={Colors.heading} />
-          </TouchableOpacity>
-        </Animated.View>
+        <Modal
+          visible={isDrawerOpen}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setIsDrawerOpen(false)}
+        >
+          <View style={styles.drawerOverlayContainer}>
+            <Pressable
+              style={styles.drawerBackdrop}
+              onPress={() => setIsDrawerOpen(false)}
+            />
+            <Animated.View style={[styles.mobileDrawer, animatedDrawerStyle]}>
+              <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+                {renderSidebarContent()}
+              </SafeAreaView>
+              <TouchableOpacity
+                style={styles.drawerCloseBtn}
+                onPress={() => setIsDrawerOpen(false)}
+                activeOpacity={0.8}
+              >
+                <X size={18} color={Colors.heading} />
+              </TouchableOpacity>
+            </Animated.View>
+          </View>
+        </Modal>
       ) : (
         <View style={styles.desktopSidebar}>
           {renderSidebarContent()}
@@ -1117,36 +1128,38 @@ const styles = StyleSheet.create({
     borderRightColor: Colors.border,
     height: '100%',
   },
-  mobileDrawer: {
+  drawerOverlayContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  drawerBackdrop: {
     position: 'absolute',
-    left: 0,
     top: 0,
+    left: 0,
+    right: 0,
     bottom: 0,
-    width: 280,
+    backgroundColor: Colors.overlay,
+  },
+  mobileDrawer: {
+    width: 290,
+    height: '100%',
     backgroundColor: '#0F172A',
-    zIndex: 999,
     ...Shadows.large,
+    elevation: 20,
+    position: 'relative',
   },
   drawerCloseBtn: {
     position: 'absolute',
     right: Spacing.md,
-    top: Spacing.md,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    top: Platform.OS === 'ios' ? 54 : 18,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     backgroundColor: Colors.white,
     alignItems: 'center',
     justifyContent: 'center',
     ...Shadows.small,
-  },
-  drawerOverlay: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: Colors.overlay,
-    zIndex: 99,
+    zIndex: 10,
   },
   mainContent: {
     flex: 1,
@@ -1162,6 +1175,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Spacing.lg,
+    paddingRight: 46,
     marginBottom: Spacing.xl,
     gap: Spacing.md,
   },

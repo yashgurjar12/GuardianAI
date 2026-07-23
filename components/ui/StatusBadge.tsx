@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 
-type BadgeStatus = 'safe' | 'warning' | 'alert' | 'info';
+type BadgeStatus = 'safe' | 'warning' | 'alert' | 'info' | 'sos';
 
 interface StatusBadgeProps {
   status: BadgeStatus;
@@ -15,6 +15,7 @@ const statusConfig: Record<BadgeStatus, { bg: string; text: string; label: strin
   warning: { bg: Colors.warningBg, text: Colors.warning, label: 'Warning' },
   alert: { bg: Colors.dangerBg, text: Colors.sos, label: 'Alert' },
   info: { bg: Colors.primaryLight, text: Colors.primary, label: 'Info' },
+  sos: { bg: Colors.dangerBg, text: Colors.sos, label: 'SOS Triggered' },
 };
 
 export default function StatusBadge({ status, label, style }: StatusBadgeProps) {

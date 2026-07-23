@@ -1,20 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import { Colors, Radius, Shadows } from '@/constants/theme';
+import React, { useEffect, useState } from 'react';
 import {
-  Text,
-  StyleSheet,
-  Pressable,
   ActivityIndicator,
-  View,
+  Pressable,
+  StyleSheet,
+  Text
 } from 'react-native';
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
+  useSharedValue,
   withSpring,
-  withTiming,
-  withSequence,
+  withTiming
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
-import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 
 interface PremiumButtonProps {
   title: string;

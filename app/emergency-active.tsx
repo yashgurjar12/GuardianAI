@@ -4,24 +4,27 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
   Animated,
+  ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Phone,
+  ShieldAlert,
   MapPin,
   Radio,
   X,
   CheckCircle2,
+  PhoneCall,
 } from 'lucide-react-native';
 import Card from '@/components/ui/Card';
 import { Colors, Spacing, Radius } from '@/constants/theme';
-import { mockTrustedContacts } from '@/constants/mockData';
+import { useContacts } from '@/context/ContactsContext';
 
 export default function EmergencyActiveScreen() {
   const router = useRouter();
+  const { contacts } = useContacts();
   const [timer, setTimer] = useState(0);
   const blinkAnim = useRef(new Animated.Value(1)).current;
 
@@ -61,6 +64,8 @@ export default function EmergencyActiveScreen() {
   const handleStop = () => {
     router.replace('/(tabs)');
   };
+
+  const notifiedContacts = contacts.filter((c) => c.isEmergency !== false);
 
   return (
     <View style={styles.container}>
@@ -116,7 +121,7 @@ export default function EmergencyActiveScreen() {
           {/* Contacts Notified */}
           <View style={styles.contactsSection}>
             <Text style={styles.contactsTitle}>CONTACTS NOTIFIED</Text>
-            {mockTrustedContacts.slice(0, 3).map((contact) => (
+            {(notifiedContacts.length > 0 ? notifiedContacts : contacts).slice(0, 4).map((contact) => (
               <View key={contact.id} style={styles.contactRow}>
                 <View
                   style={[styles.contactAvatar, { backgroundColor: contact.color + '30' }]}

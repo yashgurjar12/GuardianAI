@@ -20,6 +20,7 @@ import {
 import Card from '@/components/ui/Card';
 import ProgressRing from '@/components/ui/ProgressRing';
 import StatusBadge from '@/components/ui/StatusBadge';
+import AppTopbar from '@/components/ui/AppTopbar';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import {
   mockUser,
@@ -50,7 +51,10 @@ export default function AITwinScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+        {/* Topbar: GuardianAI title on left, Bell & Profile icon on right */}
+        <AppTopbar title="GuardianAI" />
+
+        {/* Below topbar: AI Twin section title */}
         <View style={styles.header}>
           <View>
             <Text style={styles.title}>AI Twin</Text>

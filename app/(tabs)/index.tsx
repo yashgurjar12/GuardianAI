@@ -37,6 +37,7 @@ import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 import { mockUser, mockRoutes } from '@/constants/mockData';
 
 import AnimatedBackground from '@/components/ui/AnimatedBackground';
+import AppTopbar from '@/components/ui/AppTopbar';
 
 const adviceTips = [
   {
@@ -146,28 +147,17 @@ export default function HomeScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Header Section */}
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <View style={styles.locationRow}>
-                <MapPin size={13} color={Colors.primary} />
-                <Text style={styles.locationText}>{mockUser.location}</Text>
-              </View>
-              <Text style={styles.greeting}>
-                {greeting}, {mockUser.name.split(' ')[0]} 👋
-              </Text>
-            </View>
-            <View style={styles.headerRight}>
-              <Animated.View style={bellAnimatedStyle}>
-                <TouchableOpacity
-                  style={styles.headerBtn}
-                  onPress={handleBellPress}
-                  activeOpacity={0.7}
-                >
-                  <Bell size={22} color={Colors.heading} />
-                  <View style={styles.notifDot} />
-                </TouchableOpacity>
-              </Animated.View>
+          {/* Topbar: GuardianAI title on left, Bell & Profile icon on right */}
+          <AppTopbar title="GuardianAI" onNotificationPress={handleBellPress} />
+
+          {/* Below topbar: Greeting & Location section */}
+          <View style={styles.greetingSection}>
+            <Text style={styles.greeting}>
+              {greeting}, {mockUser.name.split(' ')[0]} 👋
+            </Text>
+            <View style={styles.locationRow}>
+              <MapPin size={13} color={Colors.primary} />
+              <Text style={styles.locationText}>{mockUser.location}</Text>
             </View>
           </View>
 
@@ -289,14 +279,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xxl,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: Spacing.md,
+  greetingSection: {
     marginBottom: Spacing.lg,
+    paddingTop: Spacing.xs,
   },
-  headerLeft: {},
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',

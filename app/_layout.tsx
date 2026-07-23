@@ -13,6 +13,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { Colors } from '@/constants/theme';
 
+import { ContactsProvider } from '@/context/ContactsContext';
+import { NotificationProvider } from '@/context/NotificationContext';
+
 SplashScreen.preventAutoHideAsync();
 
 const GuardianTheme = {
@@ -46,39 +49,43 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={GuardianTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="login" />
-        <Stack.Screen name="signup" />
-        <Stack.Screen name="permissions" />
-        <Stack.Screen name="admin" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen
-          name="sos-countdown"
-          options={{
-            presentation: 'fullScreenModal',
-            animation: 'fade',
-          }}
-        />
-        <Stack.Screen
-          name="emergency-active"
-          options={{
-            presentation: 'fullScreenModal',
-            animation: 'fade',
-          }}
-        />
-        <Stack.Screen
-          name="route-alert"
-          options={{
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
-        />
-        <Stack.Screen name="history" />
-        <Stack.Screen name="settings" />
-      </Stack>
-      <StatusBar style="dark" />
-    </ThemeProvider>
+    <NotificationProvider>
+      <ContactsProvider>
+        <ThemeProvider value={GuardianTheme}>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="login" />
+            <Stack.Screen name="signup" />
+            <Stack.Screen name="permissions" />
+            <Stack.Screen name="admin" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen
+              name="sos-countdown"
+              options={{
+                presentation: 'fullScreenModal',
+                animation: 'fade',
+              }}
+            />
+            <Stack.Screen
+              name="emergency-active"
+              options={{
+                presentation: 'fullScreenModal',
+                animation: 'fade',
+              }}
+            />
+            <Stack.Screen
+              name="route-alert"
+              options={{
+                presentation: 'modal',
+                animation: 'slide_from_bottom',
+              }}
+            />
+            <Stack.Screen name="history" />
+            <Stack.Screen name="settings" />
+          </Stack>
+          <StatusBar style="dark" />
+        </ThemeProvider>
+      </ContactsProvider>
+    </NotificationProvider>
   );
 }

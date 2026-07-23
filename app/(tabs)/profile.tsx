@@ -24,10 +24,12 @@ import Card from '@/components/ui/Card';
 import StatusBadge from '@/components/ui/StatusBadge';
 import SettingTile from '@/components/ui/SettingTile';
 import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
-import { mockUser, mockTrustedContacts } from '@/constants/mockData';
+import { mockUser } from '@/constants/mockData';
+import { useContacts } from '@/context/ContactsContext';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { contacts } = useContacts();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -68,19 +70,19 @@ export default function ProfileScreen() {
         {/* Trusted Contacts */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Trusted Contacts</Text>
-            <TouchableOpacity style={styles.addBtn}>
+            <Text style={styles.sectionTitle}>Trusted Contacts ({contacts.length})</Text>
+            <TouchableOpacity style={styles.addBtn} onPress={() => router.push('/(tabs)/contacts')}>
               <UserPlus size={18} color={Colors.primary} />
-              <Text style={styles.addText}>Add</Text>
+              <Text style={styles.addText}>Manage</Text>
             </TouchableOpacity>
           </View>
           <Card>
-            {mockTrustedContacts.map((contact, idx) => (
+            {contacts.slice(0, 4).map((contact, idx) => (
               <View
                 key={contact.id}
                 style={[
                   styles.contactRow,
-                  idx < mockTrustedContacts.length - 1 && styles.contactBorder,
+                  idx < Math.min(contacts.length, 4) - 1 && styles.contactBorder,
                 ]}
               >
                 <View

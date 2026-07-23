@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Mail, Lock, Eye, EyeOff, Shield, User } from 'lucide-react-native';
-import AnimatedBackground from '@/components/ui/AnimatedBackground';
 import AIAssistant from '@/components/ui/AIAssistant';
+import AnimatedBackground from '@/components/ui/AnimatedBackground';
 import AnimatedInput from '@/components/ui/AnimatedInput';
 import PremiumButton from '@/components/ui/PremiumButton';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Radius, Spacing } from '@/constants/theme';
+import { useRouter } from 'expo-router';
+import { Eye, EyeOff, Lock, Mail, Shield, User } from 'lucide-react-native';
+import React, { useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function LoginScreen() {
   const router = useRouter();
