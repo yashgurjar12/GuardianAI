@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,6 +20,7 @@ import {
   Phone,
   Edit3,
   UserPlus,
+  AlertTriangle,
 } from 'lucide-react-native';
 import Card from '@/components/ui/Card';
 import StatusBadge from '@/components/ui/StatusBadge';
@@ -30,6 +32,7 @@ import { useContacts } from '@/context/ContactsContext';
 export default function ProfileScreen() {
   const router = useRouter();
   const { contacts } = useContacts();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -134,13 +137,48 @@ export default function ProfileScreen() {
         </View>
 
         {/* Logout */}
-        <TouchableOpacity style={styles.logoutBtn} onPress={() => router.replace('/login')}>
+        <TouchableOpacity style={styles.logoutBtn} onPress={() => setShowLogoutModal(true)}>
           <LogOut size={20} color={Colors.sos} />
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
 
         <Text style={styles.version}>GuardianAI v1.0.0</Text>
       </ScrollView>
+
+      {/* Logout Confirmation Modal */}
+      <Modal
+        visible={showLogoutModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowLogoutModal(false)}
+      >
+        <View style={styles.confirmModalOverlay}>
+          <Card style={styles.confirmModalCard}>
+            <AlertTriangle size={48} color={Colors.sos} style={{ marginBottom: Spacing.md, alignSelf: 'center' }} />
+            <Text style={styles.confirmModalTitle}>Confirm Logout</Text>
+            <Text style={styles.confirmModalSubtitle}>
+              Are you sure you want to end your session? Active safety monitoring will pause until you log back in.
+            </Text>
+            <View style={styles.confirmModalActionRow}>
+              <TouchableOpacity
+                style={styles.confirmModalCancelBtn}
+                onPress={() => setShowLogoutModal(false)}
+              >
+                <Text style={styles.confirmModalCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.confirmModalLogoutBtn}
+                onPress={() => {
+                  setShowLogoutModal(false);
+                  router.replace('/login');
+                }}
+              >
+                <Text style={styles.confirmModalLogoutText}>Log Out</Text>
+              </TouchableOpacity>
+            </View>
+          </Card>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -303,5 +341,64 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.disabled,
     marginBottom: Spacing.lg,
+  },
+  // Confirm logout Modal
+  confirmModalOverlay: {
+    flex: 1,
+    backgroundColor: Colors.overlay,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.lg,
+  },
+  confirmModalCard: {
+    width: '100%',
+    maxWidth: 380,
+    backgroundColor: Colors.white,
+    padding: Spacing.lg,
+  },
+  confirmModalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.heading,
+    textAlign: 'center',
+    marginBottom: Spacing.sm,
+  },
+  confirmModalSubtitle: {
+    fontSize: 13,
+    color: Colors.body,
+    textAlign: 'center',
+    lineHeight: 18,
+    marginBottom: Spacing.lg,
+  },
+  confirmModalActionRow: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+  },
+  confirmModalCancelBtn: {
+    flex: 1,
+    height: 44,
+    borderRadius: Radius.medium,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  confirmModalCancelText: {
+    color: Colors.heading,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  confirmModalLogoutBtn: {
+    flex: 1,
+    height: 44,
+    borderRadius: Radius.medium,
+    backgroundColor: Colors.sos,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  confirmModalLogoutText: {
+    color: Colors.white,
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

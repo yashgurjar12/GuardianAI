@@ -11,6 +11,7 @@ import {
 } from '@expo-google-fonts/poppins';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
 import { Colors } from '@/constants/theme';
 
 import { ContactsProvider } from '@/context/ContactsContext';
@@ -52,6 +53,29 @@ export default function RootLayout() {
     <NotificationProvider>
       <ContactsProvider>
         <ThemeProvider value={GuardianTheme}>
+          {Platform.OS === 'web' && (
+            <style
+              dangerouslySetInnerHTML={{
+                __html: `
+                  input, textarea, select, button {
+                    outline: none !important;
+                    box-shadow: none !important;
+                  }
+                  input:focus, textarea:focus, select:focus {
+                    outline: none !important;
+                    box-shadow: none !important;
+                  }
+                  input:-webkit-autofill,
+                  input:-webkit-autofill:hover,
+                  input:-webkit-autofill:focus {
+                    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+                    -webkit-text-fill-color: #0F172A !important;
+                    transition: background-color 5000s ease-in-out 0s;
+                  }
+                `,
+              }}
+            />
+          )}
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="login" />
